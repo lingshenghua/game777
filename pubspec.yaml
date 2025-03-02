@@ -30,6 +30,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_svg: ^2.0.17
   shimmer: ^3.0.0
+  flutter_native_splash: ^2.4.3
 
 
 dev_dependencies:
@@ -37,14 +38,36 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
-
+  json_serializable: ^6.9.0
+  build_runner: ^2.4.13
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
-
   uses-material-design: true
 
   assets:
     - assets/l10n/zh/common.json
     - assets/l10n/id/common.json
+    - assets/images/
+    - assets/images/app
 
+# 运行生成logo
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app/logo.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
 
+# 运行命令生成启动页
+# dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/images/app/splash.png"
+  color_dark: "#ffffff"
+  image_dark: "assets/images/app/splash.png"
+  android_12:
+    image: "assets/images/app/splash.png"
+    color: "#ffffff"
+    icon_background_color: "#ffffff"
