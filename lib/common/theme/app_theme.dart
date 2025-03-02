@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // 需要添加依赖: google_fonts: ^5.0.0
+import 'package:google_fonts/google_fonts.dart';
 
 final ThemeData blueTheme = ThemeData(
   useMaterial3: true,

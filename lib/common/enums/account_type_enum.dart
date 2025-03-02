@@ -1,0 +1,7 @@
+enum AccountTypeEnum {
+  PHONE,
+  EMAIL,
+  PASSWORD,
+  SMSCODE,
+  UNDERLINE_SMSCODE;
+}

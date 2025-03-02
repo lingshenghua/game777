@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:game777/core/export.dart';
+import 'package:game777/common/export.dart';
 import 'package:game777/core/routers/router_path.dart';
 import 'package:game777/main_view.dart';
 import 'package:game777/modules/acting/views/acting_view.dart';
 import 'package:game777/modules/activity/views/activity_view.dart';
-import 'package:game777/modules/auth/auth_routes.dart';
+import 'package:game777/core/routers/auth_route.dart';
 import 'package:game777/modules/bounty/views/bounty_view.dart';
 import 'package:game777/modules/game/views/game_view.dart';
 import 'package:game777/modules/user/views/user_view.dart';
@@ -54,7 +54,7 @@ class AppRouter {
       ),
 
       /// 用户认证
-      ...AuthRoutes.routes,
+      ...AuthRoute.routes,
     ],
     redirect: (context, state) {
       /// 需要登录的路径列表

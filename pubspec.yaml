@@ -31,6 +31,8 @@ dependencies:
   flutter_svg: ^2.0.17
   shimmer: ^3.0.0
   flutter_native_splash: ^2.4.3
+  flutter_form_builder: ^9.5.0
+  form_builder_validators: ^11.1.2
 
 
 dev_dependencies:
@@ -49,7 +51,7 @@ flutter:
     - assets/l10n/zh/common.json
     - assets/l10n/id/common.json
     - assets/images/
-    - assets/images/app
+    - assets/images/app/
 
 # 运行生成logo
 # dart run flutter_launcher_icons

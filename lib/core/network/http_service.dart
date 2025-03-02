@@ -248,6 +248,11 @@ class HttpService {
     return InterceptorsWrapper(
       onRequest: (RequestOptions options, RequestInterceptorHandler handler) async {
         try {
+          options.headers["token"] = "";
+          options.headers["app_channel"] = "ANDROID";
+          options.headers["version"] = "1.0.2";
+          options.headers["device_id"] = "3bf7da1e7bb04ed609a50f90a6c1fcfa64db0720e2af2d25661ac47d29db9731";
+
           await _encryptParam(options); // 执行加密
           handler.next(options); // 继续请求流程
         } catch (e) {

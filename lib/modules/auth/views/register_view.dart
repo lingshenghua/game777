@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:game777/core/export.dart';
-import 'package:game777/modules/auth/bindings/auth_binding.dart';
-import 'package:game777/modules/auth/controllers/auth_controller.dart';
+import 'package:game777/modules/auth/bindings/register_binding.dart';
+import 'package:game777/modules/auth/controllers/register_controller.dart';
 
-class RegisterView extends BasePage<AuthController, AuthBinding> {
+class RegisterView extends BasePage<RegisterController, RegisterBinding> {
   RegisterView({super.key})
       : super(
-          bindingFactory: () => AuthBinding(),
+          bindingFactory: () => RegisterBinding(),
           autoDisposeController: false,
         );
 
   @override
-  Widget buildPage(BuildContext context, AuthController controller) {
+  Widget buildPage(BuildContext context, RegisterController controller) {
     return Scaffold(
       appBar: AppBar(title: const Text('RegisterView')),
       body: Container(),
     );
-  }
-
-  @override
-  void onControllerReady(AuthController controller) {
-    controller.loadData();
   }
 }

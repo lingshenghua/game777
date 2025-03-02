@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:game777/initialize/app_initialize.dart';
 import 'package:game777/core/export.dart';
@@ -8,8 +9,16 @@ import 'package:game777/l10n/export.dart';
 import 'package:get/get.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  /// 开启启动页
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  /// 应用初始化
   await appInitialize();
+
+  /// 关闭启动页
+  FlutterNativeSplash.remove();
   runApp(GameApp());
 }
 

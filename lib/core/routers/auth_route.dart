@@ -4,7 +4,7 @@ import 'package:game777/modules/auth/views/login_view.dart';
 import 'package:game777/modules/auth/views/register_view.dart';
 import 'package:go_router/go_router.dart';
 
-class AuthRoutes {
+class AuthRoute {
   static final List<GoRoute> routes = [
     /// 登录
     leftInRightOut(RouterPath.loginView, (context, state) {

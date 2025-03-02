@@ -1,4 +1,4 @@
-import 'package:game777/common/export.dart';
+import 'package:game777/core/export.dart';
 
 class PageInfo<T> {
   final int currentPage;

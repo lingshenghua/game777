@@ -1,4 +1,5 @@
 import 'package:game777/common/export.dart';
+import 'package:game777/core/export.dart';
 
 class ResultBean<T> {
   final int? code;

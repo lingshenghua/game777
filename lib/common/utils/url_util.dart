@@ -1,6 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'package:game777/common/export.dart';
+import 'package:game777/core/export.dart';
 
 class UrlUtil {
   static String buildUrl(String path, Map<String, String>? params) {
