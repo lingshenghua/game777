@@ -8,29 +8,27 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 typedef EntityDecoder<T> = T Function(dynamic json);
 typedef ErrorTransformer = DioException Function(DioException e);
 
-/// HTTP 服务核心类
 class HttpService {
   final Dio _dio;
-  final Lock _requestLock = Lock();
-  final Map<String, int> _throttleTimestamps = {};
   final HttpServiceConfig config;
+  final Lock _throttleLock = Lock();
+  final Map<String, int> _throttleTimestamps = {};
+  late final ErrorHandler _errorHandler;
 
   HttpService({
     HttpServiceConfig? config,
     List<Interceptor>? interceptors,
   })  : config = config ?? HttpServiceConfig(),
         _dio = Dio() {
-    /// 初始化基础配置
+    _errorHandler = ErrorHandler(this.config);
     _dio.options
       ..baseUrl = this.config.baseUrl
       ..connectTimeout = this.config.connectTimeout
       ..receiveTimeout = this.config.receiveTimeout;
 
-    /// 拦截器
     _dio.interceptors.addAll([
-      /// 加密拦截器
-      _createEncryptInterceptor(),
-
+      /// 请求前处理
+      RequestInterceptor(this.config),
       if (this.config.enableLogging)
         PrettyDioLogger(
           requestHeader: this.config.logLevel >= HttpLogLevel.headers,
@@ -42,8 +40,7 @@ class HttpService {
     ]);
   }
 
-  /// 核心请求方法
-  Future<ResultBean<T>> request<T>({
+  Future<BaseResultBean<T>> request<T>({
     required HttpMethod method,
     required String path,
     EntityDecoder<T>? decoder,
@@ -70,12 +67,11 @@ class HttpService {
         checkBusinessStatus: checkBusinessStatus,
       );
     } on DioException catch (e) {
-      throw errorTransformer?.call(e) ?? _enhanceError(e);
+      throw errorTransformer?.call(e) ?? _errorHandler.enhanceError(e);
     }
   }
 
-  /// 分页专用请求
-  Future<ResultBean<PageInfo<T>>> paginatedRequest<T>({
+  Future<BaseResultBean<BasePageInfo<T>>> paginatedRequest<T>({
     required HttpMethod method,
     required String path,
     required EntityDecoder<T> itemDecoder,
@@ -85,8 +81,8 @@ class HttpService {
     String recordsField = CommonConst.records,
     bool checkBusinessStatus = true,
     bool enableThrottle = true,
-  }) async {
-    return request<PageInfo<T>>(
+  }) {
+    return request<BasePageInfo<T>>(
       method: method,
       path: path,
       decoder: (json) => _parsePaginatedData(
@@ -102,7 +98,6 @@ class HttpService {
     );
   }
 
-  /// 执行网络请求
   Future<Response<dynamic>> _executeRequest({
     required HttpMethod method,
     required String path,
@@ -118,45 +113,63 @@ class HttpService {
       queryParameters: queryParameters,
     );
 
-    return _requestLock.synchronized(() async {
-      if (enableThrottle) _checkThrottle(requestKey);
+    if (enableThrottle) _checkThrottle(requestKey);
 
-      try {
-        return await _dio.request(
-          path,
-          data: data,
-          queryParameters: queryParameters,
-          options: Options(method: method.value),
-          cancelToken: cancelToken,
-        );
-      } finally {
-        if (enableThrottle) _clearThrottleRecord(requestKey);
-      }
-    });
+    try {
+      return await _dio.request(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: Options(method: method.value),
+        cancelToken: cancelToken,
+      );
+    } finally {
+      if (enableThrottle) _clearThrottleRecord(requestKey);
+    }
   }
 
-  /// 响应处理
-  ResultBean<T> _processResponse<T>({
+  BaseResultBean<T> _processResponse<T>({
     required Response<dynamic> response,
     EntityDecoder<T>? decoder,
     required bool checkBusinessStatus,
   }) {
     _validateHttpResponse(response);
 
-    final result = ResultBean<T>.fromJson(
+    final result = BaseResultBean<T>.fromJson(
       json: response.data as Map<String, dynamic>,
       fromJsonT: decoder,
     );
 
-    if (checkBusinessStatus) {
-      _validateBusinessResult(result, response);
-    }
+    /// 业务逻辑处理
+    if (checkBusinessStatus) _errorHandler.validateBusinessResult(result, response);
 
     return result;
   }
 
+  void _checkThrottle(String requestKey) {
+    _throttleLock.synchronized(() {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final lastTime = _throttleTimestamps[requestKey] ?? 0;
+
+      if (now - lastTime < config.throttleDuration.inMilliseconds) {
+        throw DioException(
+          requestOptions: RequestOptions(path: requestKey),
+          error: '操作过于频繁，请稍后再试',
+          type: DioExceptionType.cancel,
+        );
+      }
+      _throttleTimestamps[requestKey] = now;
+    });
+  }
+
+  void _clearThrottleRecord(String requestKey) {
+    _throttleLock.synchronized(() {
+      _throttleTimestamps.remove(requestKey);
+    });
+  }
+
   ///  分页处理
-  PageInfo<T> _parsePaginatedData<T>(
+  BasePageInfo<T> _parsePaginatedData<T>(
     dynamic json, {
     required EntityDecoder<T> itemDecoder,
     required String recordsField,
@@ -169,7 +182,7 @@ class HttpService {
       throw ArgumentError('分页记录项格式错误');
     }).toList();
 
-    return PageInfo<T>.fromJson(data).copyWith(records: records);
+    return BasePageInfo<T>.fromJson(data).copyWith(records: records);
   }
 
   ///  防抖机制
@@ -181,24 +194,6 @@ class HttpService {
   }) {
     final uri = Uri(path: path, queryParameters: queryParameters);
     return '${method.value}:${uri.toString()}';
-  }
-
-  void _checkThrottle(String requestKey) {
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final lastTime = _throttleTimestamps[requestKey] ?? 0;
-
-    if (now - lastTime < config.throttleDuration.inMilliseconds) {
-      throw DioException(
-        requestOptions: RequestOptions(path: requestKey),
-        error: '操作过于频繁，请稍后再试',
-        type: DioExceptionType.cancel,
-      );
-    }
-    _throttleTimestamps[requestKey] = now;
-  }
-
-  void _clearThrottleRecord(String requestKey) {
-    _throttleTimestamps.remove(requestKey);
   }
 
   ///  校验系统
@@ -220,67 +215,5 @@ class HttpService {
         type: DioExceptionType.badResponse,
       );
     }
-  }
-
-  void _validateBusinessResult<T>(ResultBean<T> result, Response response) {
-    if (result.code != ResponseCodeEnum.success.code) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        error: result.message ?? '业务请求失败',
-        type: DioExceptionType.badResponse,
-        response: response,
-      );
-    }
-  }
-
-  /// 添加加密参数
-  _encryptParam(RequestOptions options) async {
-    String path = options.uri.path;
-    String query = options.uri.query;
-    String tempSortString = UrlUtil.sortString(query, options.data);
-    String finalEncryptStr = path + tempSortString;
-    String encryptStr = await EncryptUtil.instance.sha256(finalEncryptStr);
-    options.headers[CommonConst.sign] = encryptStr;
-  }
-
-  /// 创建加密拦截器
-  Interceptor _createEncryptInterceptor() {
-    return InterceptorsWrapper(
-      onRequest: (RequestOptions options, RequestInterceptorHandler handler) async {
-        try {
-          options.headers["token"] = "";
-          options.headers["app_channel"] = "ANDROID";
-          options.headers["version"] = "1.0.2";
-          options.headers["device_id"] = "3bf7da1e7bb04ed609a50f90a6c1fcfa64db0720e2af2d25661ac47d29db9731";
-
-          await _encryptParam(options); // 执行加密
-          handler.next(options); // 继续请求流程
-        } catch (e) {
-          handler.reject(
-            DioException(
-              requestOptions: options,
-              error: '参数加密失败: $e',
-              type: DioExceptionType.unknown,
-            ),
-          );
-        }
-      },
-    );
-  }
-
-  ///  错误处理
-  DioException _enhanceError(DioException e) {
-    String message = '网络请求失败';
-    dynamic errorData;
-
-    if (e.response?.data is Map<String, dynamic>) {
-      errorData = e.response!.data as Map<String, dynamic>;
-      message = errorData['message'] ?? message;
-    }
-
-    return e.copyWith(
-      error: message,
-      stackTrace: e.stackTrace,
-    );
   }
 }

@@ -7,7 +7,7 @@ final class UserCenterService {
 
   /// 设备注册
   static Future<DeviceResponse> deviceRegister(DeviceRequest deviceRequest) async {
-    ResultBean resultBean = await HttpService().request<DeviceResponse>(
+    BaseResultBean resultBean = await HttpService().request<DeviceResponse>(
       method: HttpMethod.post,
       path: UserCenterApi.deviceRegister,
       data: deviceRequest.toJson(),
@@ -18,7 +18,7 @@ final class UserCenterService {
 
   /// 用户登录
   static Future<LoginResponse> userLogin(LoginRequest loginRequest) async {
-    ResultBean resultBean = await HttpService().request<LoginResponse>(
+    BaseResultBean resultBean = await HttpService().request<LoginResponse>(
       method: HttpMethod.post,
       path: UserCenterApi.userLogin,
       data: loginRequest.toJson(),
