@@ -1,0 +1,4 @@
+#Sun Mar 02 01:14:31 CST 2025
+base.0=/Users/lingshenghua/Desktop/workFile/game777/build/app/intermediates/dex/release/minifyReleaseWithR8/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
