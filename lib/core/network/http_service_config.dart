@@ -28,14 +28,7 @@ class HttpServiceConfig {
     this.defaultErrorMessage = "请求失败",
     this.signatureBuilder = _signatureBuilder,
     this.signHeaderName = CommonConst.sign,
-  }) {
-    defaultHeaders.addAll({
-      "token": "",
-      "app_channel": "ANDROID",
-      "version": "1.0.2",
-      "device_id": "3bf7da1e7bb04ed609a50f90a6c1fcfa64db0720e2af2d25661ac47d29db9731"
-    });
-  }
+  });
 
   /// 线程安全的头部更新方法
   Future<void> updateHeader(String key, dynamic value) async {

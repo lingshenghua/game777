@@ -9,35 +9,57 @@ typedef EntityDecoder<T> = T Function(dynamic json);
 typedef ErrorTransformer = DioException Function(DioException e);
 
 class HttpService {
+  static HttpService? _instance;
   final Dio _dio;
   final HttpServiceConfig config;
   final Lock _throttleLock = Lock();
   final Map<String, int> _throttleTimestamps = {};
   late final ErrorHandler _errorHandler;
 
-  HttpService({
-    HttpServiceConfig? config,
+  /// 私有构造函数
+  HttpService._({
+    required this.config,
     List<Interceptor>? interceptors,
-  })  : config = config ?? HttpServiceConfig(),
-        _dio = Dio() {
-    _errorHandler = ErrorHandler(this.config);
+  }) : _dio = Dio() {
+    _errorHandler = ErrorHandler(config);
     _dio.options
-      ..baseUrl = this.config.baseUrl
-      ..connectTimeout = this.config.connectTimeout
-      ..receiveTimeout = this.config.receiveTimeout;
+      ..baseUrl = config.baseUrl
+      ..connectTimeout = config.connectTimeout
+      ..receiveTimeout = config.receiveTimeout;
 
     _dio.interceptors.addAll([
-      /// 请求前处理
-      RequestInterceptor(this.config),
-      if (this.config.enableLogging)
+      RequestInterceptor(config),
+      if (config.enableLogging)
         PrettyDioLogger(
-          requestHeader: this.config.logLevel >= HttpLogLevel.headers,
-          requestBody: this.config.logLevel >= HttpLogLevel.body,
-          responseBody: this.config.logLevel >= HttpLogLevel.body,
-          error: this.config.logLevel >= HttpLogLevel.errors,
+          requestHeader: config.logLevel >= HttpLogLevel.headers,
+          requestBody: config.logLevel >= HttpLogLevel.body,
+          responseBody: config.logLevel >= HttpLogLevel.body,
+          error: config.logLevel >= HttpLogLevel.errors,
         ),
       ...?interceptors,
     ]);
+  }
+
+  /// 全局访问点
+  static HttpService get instance {
+    if (_instance == null) {
+      throw Exception('HttpService 未初始化，请先调用 init() 方法');
+    }
+    return _instance!;
+  }
+
+  /// 初始化方法（应用启动时调用）
+  static void init({
+    required HttpServiceConfig config,
+    List<Interceptor>? interceptors,
+  }) {
+    if (_instance != null) {
+      throw Exception('HttpService 已初始化，禁止重复调用 init()');
+    }
+    _instance = HttpService._(
+      config: config,
+      interceptors: interceptors,
+    );
   }
 
   Future<BaseResultBean<T>> request<T>({

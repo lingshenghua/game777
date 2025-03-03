@@ -58,17 +58,17 @@ class AppRouter {
     ],
     redirect: (context, state) {
       /// 需要登录的路径列表
-      final protectedPaths = [
-        RouterPath.userView,
-        RouterPath.bountyView,
-        RouterPath.actingView,
-        RouterPath.activityView,
-      ];
-
-      /// 需要登录的路径列表
-      if (protectedPaths.contains(state.fullPath)) {
-        return RouterPath.loginView;
-      }
+      // final protectedPaths = [
+      //   RouterPath.userView,
+      //   RouterPath.bountyView,
+      //   RouterPath.actingView,
+      //   RouterPath.activityView,
+      // ];
+      //
+      // /// 需要登录的路径列表
+      // if (protectedPaths.contains(state.fullPath)) {
+      //   return RouterPath.loginView;
+      // }
       return null;
     },
     errorPageBuilder: (context, state) => MaterialPage(
