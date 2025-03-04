@@ -26,6 +26,8 @@ class GameApp extends StatelessWidget {
   GameApp({super.key});
 
   final AppRouter _appRouter = AppRouter();
+  final SystemController _systemController = Get.find<SystemController>();
+  final GlobalController _globalController = Get.find<GlobalController>();
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,10 @@ class GameApp extends StatelessWidget {
           routerDelegate: _appRouter.router.routerDelegate,
           backButtonDispatcher: _appRouter.router.backButtonDispatcher,
           debugShowCheckedModeBanner: false,
-          theme: blueTheme,
-          locale: Get.find<SystemController>().locale,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: _systemController.themeMode,
+          locale: _systemController.locale,
           localizationsDelegates: [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
@@ -57,7 +61,7 @@ class GameApp extends StatelessWidget {
           getPages: [],
           builder: (context, child) {
             return GetBuilder<GlobalController>(
-              init: Get.find<GlobalController>(),
+              init: _globalController,
               builder: (ctrl) => child ?? const SizedBox.shrink(),
             );
           },

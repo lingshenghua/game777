@@ -131,6 +131,5 @@ class AppLocalizations {
   static Future<void> changeLocale(Locale newLocale) async {
     SystemController systemController = Get.find<SystemController>();
     systemController.switchLanguage(newLocale);
-    Get.updateLocale(newLocale);
   }
 }

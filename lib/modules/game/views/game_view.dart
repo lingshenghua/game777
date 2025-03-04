@@ -5,6 +5,7 @@ import 'package:game777/core/export.dart';
 import 'package:game777/l10n/export.dart';
 import 'package:game777/modules/game/bindings/game_binding.dart';
 import 'package:game777/modules/game/controllers/game_controller.dart';
+import 'package:get/get.dart';
 
 class GameView extends BasePage<GameController, GameBinding> {
   GameView({super.key})
@@ -19,16 +20,55 @@ class GameView extends BasePage<GameController, GameBinding> {
       appBar: AppBar(title: const Text('GameView')),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(I10nUtil.tr('1001')),
-            Text(I10nUtil.tr('1002', valueList: ['张三'])),
-            ElevatedButton(
-              onPressed: () => AppLocalizations.changeLocale(const Locale('id')),
-              child: const Text('切换印尼语'),
+            Container(
+              height: 100.h,
+              width: 100.w,
+              color: ColorUtil.success,
             ),
-            ElevatedButton(
-              onPressed: () => AppLocalizations.changeLocale(const Locale('zh')),
-              child: const Text('切换中文'),
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () => AppLocalizations.changeLocale(const Locale('id')),
+              child: Container(
+                height: 80.h,
+                width: 240.w,
+                alignment: Alignment.center,
+                color: ColorUtil.primary,
+                child: const Text('切换印尼语'),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () => AppLocalizations.changeLocale(const Locale('zh')),
+              child: Container(
+                height: 80.h,
+                width: 240.w,
+                alignment: Alignment.center,
+                color: ColorUtil.success,
+                child: const Text('切换中文'),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () => Get.find<SystemController>().toggleTheme(),
+              child: Container(
+                height: 80.h,
+                width: 240.w,
+                alignment: Alignment.center,
+                color: ColorUtil.success,
+                child: const Text('切换'),
+              ),
+            ),
+            SizedBox(
+              height: 20,
             ),
             SmartImage.circle(
               size: 100.w,

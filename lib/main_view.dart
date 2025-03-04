@@ -67,6 +67,7 @@ class _MainViewState extends State<MainView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     I10nUtil().init(context);
+    ColorUtil().init(context);
   }
 
   @override
