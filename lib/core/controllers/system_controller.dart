@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-/// 全局控制器
+/// 系统全局控制器
 class SystemController extends GetxController {
   Locale _locale = const Locale("zh");
 
