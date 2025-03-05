@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:game777/common/export.dart';
+import 'package:game777/common/widgets/custom_button.dart';
 import 'package:game777/core/export.dart';
 import 'package:game777/l10n/export.dart';
 import 'package:game777/modules/game/bindings/game_binding.dart';
@@ -58,6 +59,21 @@ class GameView extends BasePage<GameController, GameBinding> {
               height: 20,
             ),
             GestureDetector(
+              onTap: () {
+                controller.openBottomSheet(context);
+              },
+              child: Container(
+                height: 80.h,
+                width: 240.w,
+                alignment: Alignment.center,
+                color: ColorUtil.success,
+                child: const Text('showSelectBottomSheet'),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
               onTap: () => Get.find<SystemController>().toggleTheme(),
               child: Container(
                 height: 80.h,
@@ -66,9 +82,6 @@ class GameView extends BasePage<GameController, GameBinding> {
                 color: ColorUtil.success,
                 child: const Text('切换'),
               ),
-            ),
-            SizedBox(
-              height: 20,
             ),
             SmartImage.circle(
               size: 100.w,
@@ -109,6 +122,12 @@ class GameView extends BasePage<GameController, GameBinding> {
                 shadows: [Shadow(color: Colors.black, blurRadius: 2)],
               ),
               textAlign: TextAlign.center,
+            ),
+            CustomButton(
+              text: '提交',
+              loading: false,          // 加载状态
+              disabled: false,        // 禁用状态
+              onPressed: () {},       // 点击回调
             )
           ],
         ),
@@ -118,6 +137,6 @@ class GameView extends BasePage<GameController, GameBinding> {
 
   @override
   void onControllerReady(GameController controller) {
-    controller.loadData();
+
   }
 }

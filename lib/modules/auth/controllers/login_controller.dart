@@ -13,7 +13,7 @@ class LoginController extends GetxController {
       final formData = loginFormKey.currentState!.value;
       print(formData);
       LoginResponse loginResponse = await UserCenterService.userLogin(
-          LoginRequest(accountTypeEnum: AccountTypeEnum.EMAIL, userAccount: "10086@qq.com", password: "123456"));
+          LoginRequest(accountTypeEnum: AccountTypeEnum.email, userAccount: "10086@qq.com", password: "123456"));
       print(loginResponse.token);
       print(loginResponse.token);
       print(loginResponse.token);

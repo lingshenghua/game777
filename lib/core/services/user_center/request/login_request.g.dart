@@ -9,14 +9,11 @@ part of 'login_request.dart';
 LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) => LoginRequest(
       userAccount: json['userAccount'] as String? ?? "",
       password: json['password'] as String? ?? "",
-      accountTypeEnum: $enumDecodeNullable(
-              _$AccountTypeEnumEnumMap, json['accountTypeEnum']) ??
-          AccountTypeEnum.EMAIL,
+      accountTypeEnum: $enumDecodeNullable(_$AccountTypeEnumEnumMap, json['accountTypeEnum']) ?? AccountTypeEnum.email,
       phoneAreaCode: json['phoneAreaCode'] as String? ?? "",
     );
 
-Map<String, dynamic> _$LoginRequestToJson(LoginRequest instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$LoginRequestToJson(LoginRequest instance) => <String, dynamic>{
       'userAccount': instance.userAccount,
       'password': instance.password,
       'accountTypeEnum': _$AccountTypeEnumEnumMap[instance.accountTypeEnum]!,
@@ -24,9 +21,9 @@ Map<String, dynamic> _$LoginRequestToJson(LoginRequest instance) =>
     };
 
 const _$AccountTypeEnumEnumMap = {
-  AccountTypeEnum.PHONE: 'PHONE',
-  AccountTypeEnum.EMAIL: 'EMAIL',
-  AccountTypeEnum.PASSWORD: 'PASSWORD',
-  AccountTypeEnum.SMSCODE: 'SMSCODE',
-  AccountTypeEnum.UNDERLINE_SMSCODE: 'UNDERLINE_SMSCODE',
+  AccountTypeEnum.phone: 'PHONE',
+  AccountTypeEnum.email: 'EMAIL',
+  AccountTypeEnum.password: 'PASSWORD',
+  AccountTypeEnum.smsCode: 'SMSCODE',
+  AccountTypeEnum.underlineSmsCode: 'UNDERLINE_SMSCODE',
 };

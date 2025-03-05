@@ -13,7 +13,7 @@ class LoginRequest {
   LoginRequest(
       {this.userAccount = "",
       this.password = "",
-      this.accountTypeEnum = AccountTypeEnum.EMAIL,
+      this.accountTypeEnum = AccountTypeEnum.email,
       this.phoneAreaCode = ""});
 
   factory LoginRequest.fromJson(Map<String, dynamic> json) => _$LoginRequestFromJson(json);
